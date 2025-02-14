@@ -1,1 +1,238 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Το «λύομαι» στη μέση φωνή</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #f0e6d2, #d4b996);
+            background-size: cover;
+            background-attachment: fixed;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+        }
+        .instructions {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .column {
+            width: 22%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+        /* Χρώματα για κάθε ομάδα */
+        #teamA {
+            background-color: rgba(255, 182, 193, 0.8); /* Ανοιχτό ροζ */
+        }
+        #teamB {
+            background-color: rgba(173, 216, 230, 0.8); /* Ανοιχτό μπλε */
+        }
+        #teamC {
+            background-color: rgba(144, 238, 144, 0.8); /* Ανοιχτό πράσινο */
+        }
+        #teamD {
+            background-color: rgba(255, 215, 0, 0.8); /* Ανοιχτό κίτρινο */
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        #winnerMessage {
+            font-size: 24px;
+            font-weight: bold;
+            color: green;
+            margin-top: 20px;
+            display: none;
+        }
+        .feedback {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .emoji {
+            font-size: 24px;
+            margin: 5px;
+        }
+        .creation-credit {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Το «λύομαι» στη μέση φωνή 📖🔍</h1>
+    <div class="creation-credit">Δημιουργία: Παναγιώτης Δόμβρος 2025 (CC BY-NC)</div>
+    <p class="instructions">Μόλις ο/η εκπαιδευτικός σας δώσει το σύνθημα ξεκινήστε! Η ομάδα που θα απαντήσει πρώτη σωστά και τις 10 ερωτήσεις και θα φτάσει στο τέλος του πίνακα θα είναι η νικήτρια. 🎉</p>
+    
+    <div class="container">
+        <div class="column" id="teamA">
+            <h3>Ομάδα Α 🎀</h3>
+            <div id="questionsA"></div>
+        </div>
+        <div class="column" id="teamB">
+            <h3>Ομάδα Β 🌊</h3>
+            <div id="questionsB"></div>
+        </div>
+        <div class="column" id="teamC">
+            <h3>Ομάδα Γ 🌿</h3>
+            <div id="questionsC"></div>
+        </div>
+        <div class="column" id="teamD">
+            <h3>Ομάδα Δ 🌟</h3>
+            <div id="questionsD"></div>
+        </div>
+    </div>
 
+    <p id="winnerMessage">ΜΠΡΑΒΟ! Η ομάδα νίκησε! 🎉🏆</p>
+
+    <!-- Ηχοι -->
+    <audio id="failSound">
+        <source src="fail-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="successSound">
+        <source src="success-sound.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const questions = {
+            A: [
+                "Το απαρέμφατο παρακειμένου είναι λελύσθαι.",
+                "Το πρώτο ενικό της οριστικής μέλλοντα είναι λύσομαι.",
+                "Το ἐλύου είναι τύπος υποτακτικής παρατατικού.",
+                "Η ευκτική αορίστου έχει τύπο λυσαίμην.",
+                "Το πρώτο ενικό της οριστικής υπερσυντελίκου είναι ἐλελύμην.",
+                "Η προστακτική ενεστώτα έχει τύπο λύου.",
+                "Η μετοχή αορίστου είναι λυσάμενος, λυσαμένη, λυσάμενον.",
+                "Το λέλυμαι είναι προστακτική παρακειμένου.",
+                "Το λύσεσθαι είναι απαρέμφατο μέλλοντα.",
+                "Η υποτακτική παρακειμένου έχει τύπο λελύμεθα."
+            ],
+            B: [
+                "Το ἐλυόμην είναι οριστική παρατατικού.",
+                "Η ευκτική μέλλοντα έχει τύπο λυσοίμην.",
+                "Η προστακτική αορίστου έχει τύπο λύσασθε.",
+                "Το λέλυσθε είναι οριστική παρακειμένου.",
+                "Η μετοχή παρακειμένου είναι λελυμένος, λελυμένη, λελυμένον.",
+                "Το λύσομαι είναι πρώτο ενικό της ευκτικής μέλλοντα.",
+                "Η υποτακτική αορίστου έχει τύπο λύσωμαι.",
+                "Το λύσεται είναι δεύτερο ενικό της προστακτικής μέλλοντα.",
+                "Το ἐλελύμην είναι τύπος του μέλλοντα.",
+                "Η προστακτική παρακειμένου έχει τύπο λελύσθω."
+            ],
+            C: [
+                "Το απαρέμφατο ενεστώτα είναι λύεσθαι.",
+                "Η ευκτική παρατατικού σχηματίζεται με το θέμα του ενεστώτα και την αύξηση.",
+                "Η μετοχή μέλλοντα είναι λυσόμενος, λυσομένη, λυσόμενον.",
+                "Το ἐλελύσθε είναι τρίτο πληθυντικό της οριστικής παρακειμένου.",
+                "Η υποτακτική μέλλοντα έχει τύπο λύσωμαι.",
+                "Το ἐλύσαντο είναι τύπος αορίστου.",
+                "Το λελύμεθα είναι τύπος υποτακτικής παρακειμένου.",
+                "Το λύεσθων είναι προστακτική μέλλοντα.",
+                "Το λύσοιτο είναι ευκτική μέλλοντα.",
+                "Το λύσηται είναι υποτακτική αορίστου."
+            ],
+            D: [
+                "Το ἐλύετο είναι τρίτο ενικό της οριστικής παρατατικού.",
+                "Το λέλυμαι είναι πρώτο ενικό της οριστικής παρακειμένου.",
+                "Το ἐλελύμην είναι υποτακτική υπερσυντελίκου.",
+                "Η ευκτική αορίστου έχει τύπο λυσαίμεθα.",
+                "Η προστακτική ενεστώτα έχει τύπο λύεσθε.",
+                "Η μετοχή υπερσυντελίκου είναι λελυμένος, λελυμένη, λελυμένον.",
+                "Το λύοιτο είναι ευκτική ενεστώτα.",
+                "Η υποτακτική αορίστου έχει τύπο λυσώμεθα.",
+                "Η προστακτική αορίστου έχει τύπο λύσαι.",
+                "Το λύσασθαι είναι απαρέμφατο αορίστου."
+            ]
+        };
+
+        const correctAnswers = {
+            A: [true, true, false, true, true, true, true, false, true, false],
+            B: [true, true, true, true, true, false, true, false, false, true],
+            C: [true, false, true, false, true, true, true, false, true, true],
+            D: [true, true, false, true, true, false, false, true, true, true]
+        };
+
+        function showQuestion(team, index) {
+            const questionElement = document.getElementById(`question${team}${index}`);
+            const buttons = document.querySelectorAll(`#questions${team} div:nth-child(${index + 1}) button`);
+            questionElement.classList.remove("hidden");
+            buttons.forEach(btn => btn.classList.remove("hidden"));
+        }
+
+        function checkAnswer(team, index, selectedAnswer) {
+            const feedbackElement = document.createElement("p");
+            feedbackElement.classList.add("feedback");
+
+            if (correctAnswers[team][index] === selectedAnswer) {
+                feedbackElement.textContent = "Σωστό! 🎉";
+                feedbackElement.classList.add("correct");
+                document.querySelectorAll(`#questions${team} div:nth-child(${index + 1}) button`).forEach(btn => btn.disabled = true);
+                if (index === 9) { 
+                    document.getElementById("winnerMessage").style.display = "block";
+                    const successSound = document.getElementById("successSound");
+                    successSound.play(); // Παίζει τον ήχο επιτυχίας
+                    disableAllTeams();
+                }
+            } else {
+                feedbackElement.textContent = "Προσπάθησε ξανά! 😅";
+                feedbackElement.classList.add("incorrect");
+                const failSound = document.getElementById("failSound");
+                failSound.play(); // Παίζει τον ήχο αποτυχίας
+            }
+
+            const questionDiv = document.querySelector(`#questions${team} div:nth-child(${index + 1})`);
+            questionDiv.appendChild(feedbackElement);
+        }
+
+        function disableAllTeams() {
+            document.querySelectorAll("button").forEach(btn => btn.disabled = true);
+        }
+
+        function generateQuestions(team) {
+            let container = document.getElementById(`questions${team}`);
+            questions[team].forEach((question, index) => {
+                let div = document.createElement("div");
+                div.innerHTML = `
+                    <button onclick="showQuestion('${team}', ${index})">Εμφάνιση Ερώτησης ${index + 1}</button>
+                    <p id="question${team}${index}" class="hidden">${question}</p>
+                    <button class="hidden" onclick="checkAnswer('${team}', ${index}, true)">Σωστό</button>
+                    <button class="hidden" onclick="checkAnswer('${team}', ${index}, false)">Λάθος</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        generateQuestions("A");
+        generateQuestions("B");
+        generateQuestions("C");
+        generateQuestions("D");
+    </script>
+</body>
+</html>
